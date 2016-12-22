@@ -11,6 +11,11 @@ public class CieloError {
 	private final Integer Code;
 	private final String Message;
 
+	public CieloError() {
+		Code = null;
+		Message = null;
+	}
+
 	public CieloError(Integer code, String message) {
 		this.Code = code;
 		this.Message = message;

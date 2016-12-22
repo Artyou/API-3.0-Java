@@ -24,6 +24,15 @@ public class CreditCard {
 	@SerializedName("CardToken")
 	private String cardToken;
 
+	@SerializedName("CustomerName")
+	private String customerName;
+
+	@SerializedName("Links")
+	private Object links;
+
+	public CreditCard() {
+	}
+
 	public CreditCard(String securityCode, String brand) {
 		setSecurityCode(securityCode);
 		setBrand(brand);
@@ -90,5 +99,18 @@ public class CreditCard {
 	public CreditCard setSecurityCode(String securityCode) {
 		this.securityCode = securityCode;
 		return this;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public CreditCard setCustomerName(String customerName) {
+		this.customerName = customerName;
+		return this;
+	}
+
+	public Object getLinks() {
+		return links;
 	}
 }

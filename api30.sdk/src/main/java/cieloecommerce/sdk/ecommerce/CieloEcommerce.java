@@ -2,13 +2,10 @@ package cieloecommerce.sdk.ecommerce;
 
 import java.io.IOException;
 
+import cieloecommerce.sdk.ecommerce.request.*;
 import org.apache.http.client.HttpClient;
 
 import cieloecommerce.sdk.Merchant;
-import cieloecommerce.sdk.ecommerce.request.CieloRequestException;
-import cieloecommerce.sdk.ecommerce.request.CreateSaleRequest;
-import cieloecommerce.sdk.ecommerce.request.QuerySaleRequest;
-import cieloecommerce.sdk.ecommerce.request.UpdateSaleRequest;
 
 /**
  * The Cielo Ecommerce SDK front-end;
@@ -203,5 +200,29 @@ public class CieloEcommerce {
 	 */
 	public Sale captureSale(String paymentId) throws IOException, CieloRequestException {
 		return captureSale(paymentId, null, null);
+	}
+
+	/**
+	 * Send the Credit card to be tokenized and return the CardToken
+	 * returned by Cielo.
+	 *
+	 * @param card
+	 *            The card to be tokenized
+	 * @return The CreditCard with CardToken returned by Cielo.
+	 * @throws IOException
+	 * @throws CieloRequestException
+	 *             if anything gets wrong.
+	 * @see <a href=
+	 *      "https://developercielo.github.io/Webservice-3.0/english.html#error-codes">Error
+	 *      Codes</a>
+	 */
+	public CreditCard tokenizeCard(CreditCard card) throws IOException, CieloRequestException {
+		TokenizeCardRequest tokenizeCardRequest = new TokenizeCardRequest(merchant, environment);
+
+		tokenizeCardRequest.setHttpClient(httpClient);
+
+		card = tokenizeCardRequest.execute(card);
+
+		return card;
 	}
 }

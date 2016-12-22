@@ -28,17 +28,17 @@ import cieloecommerce.sdk.ecommerce.Sale;
  *            the AsyncTask expects 3 params and we can only anticipate 2 of
  *            them.
  */
-public abstract class AbstractSaleRequest<T> {
+public abstract class AbstractRequest<S, T> {
 	final Environment environment;
 	private final Merchant merchant;
 	private HttpClient httpClient;
 
-	AbstractSaleRequest(Merchant merchant, Environment environment) {
+	AbstractRequest(Merchant merchant, Environment environment) {
 		this.merchant = merchant;
 		this.environment = environment;
 	}
 
-	public abstract Sale execute(T param) throws IOException, CieloRequestException;
+	public abstract T execute(S param) throws IOException, CieloRequestException;
 
 	public void setHttpClient(HttpClient httpClient) {
 		this.httpClient = httpClient;
@@ -75,12 +75,12 @@ public abstract class AbstractSaleRequest<T> {
 	 *
 	 * @param response
 	 *            HttpResponse by Cielo, with headers, status code, etc.
-	 * @return An instance of Sale with the response entity sent by Cielo.
+	 * @return An instance of T with the response entity sent by Cielo.
 	 * @throws IOException
 	 *             yeah, deal with it
 	 * @throws CieloRequestException
 	 */
-	Sale readResponse(HttpResponse response) throws IOException, CieloRequestException {
+	T readResponse(HttpResponse response, Class<T> clazz) throws IOException, CieloRequestException {
 		HttpEntity responseEntity = response.getEntity();
 		InputStream responseEntityContent = responseEntity.getContent();
 
@@ -98,28 +98,29 @@ public abstract class AbstractSaleRequest<T> {
 			responseBuilder.append(line);
 		}
 
-		return parseResponse(response.getStatusLine().getStatusCode(), responseBuilder.toString());
+		return parseResponse(response.getStatusLine().getStatusCode(), responseBuilder.toString(), clazz);
 	}
 
 	/**
-	 * Just decode the JSON into a Sale or create the exception chain to be
+	 * Just decode the JSON into a T or create the exception chain to be
 	 * thrown
 	 *
 	 * @param statusCode
 	 *            The status code of response
 	 * @param responseBody
 	 *            The response sent by Cielo
-	 * @return An instance of Sale or null
+	 * @param clazz
+	 * @return An instance of T or null
 	 * @throws CieloRequestException
 	 */
-	private Sale parseResponse(int statusCode, String responseBody) throws CieloRequestException {
-		Sale sale = null;
+	private T parseResponse(int statusCode, String responseBody, Class<T> clazz) throws CieloRequestException {
+		T sale = null;
 		Gson gson = new Gson();
 
 		switch (statusCode) {
 		case 200:
 		case 201:
-			sale = gson.fromJson(responseBody, Sale.class);
+			sale = gson.fromJson(responseBody, clazz);
 			break;
 		case 400:
 			CieloRequestException exception = null;
